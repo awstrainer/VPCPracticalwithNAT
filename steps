@@ -1,0 +1,43 @@
+Create myVPC - 10.0.0.0/16
+
+Automatically creates 3 things for myVPC 
+1. RouteTable  -> main route table(Best Practise to make it private)
+2. Security Group
+3. Network ACL
+
+Create two subnet
+10.0.1.0/24 - Pub
+10.0.2.0/24 - Priv
+
+Create IGW - myIGW > Attach to myVPC
+
+Create myPublicRT
+Add Route to Internet by > Edit Routes > 0.0.0.0/0,  myIGW
+Add Subnet Assocation for Internet > Subnet Association > select subnet with 10.0.1.0/24 - Pub
+
+Update Auto-assign public IP to YES for subnet with range - 10.0.1.0/24 - Pub
+
+Create EC2 instance, boot strap script
+#!/bin/bash
+yum install httpd -y
+yum update -y
+service httpd start
+chkconfig httpd on
+echo "<html><h1>Hey, BootStraping Works!</h1></html>" > /var/www/html/index.html
+
+Create Another instance, in private subnet
+keep ports ssh, icmp,mysql-arora and source would be 10.0.1.0/24
+
+Create EC2 instance in private Subnet
+
+
+From host machine, 
+ssh-add -K myPrivateKey.pem
+ssh -A ec2-user@PublicIPEC2
+ssh -A ec2-user@PrivateIPEC2
+
+Create a NAT Instance in public subnet and disable source/destination check
+Add HTTPS in SG as well
+
+Private Route Table > Edit Route 0.0.0.0/0 and target is NAT
+
